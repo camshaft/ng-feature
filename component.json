@@ -1,0 +1,16 @@
+{
+  "name": "ng-feature",
+  "repo": "CamShaft/ng-feature",
+  "description": "Feature flags with angular",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "CamShaft/feature": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ]
+}
