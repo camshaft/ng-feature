@@ -26,8 +26,9 @@ package.directive('feature', [
         if (not) name = name.substr(1);
 
         var unwatch = feature.watch(name, function(enabled) {
-          // TODO can we do something like ng-if?
-          elem.css('display', check(enabled) ? '' : 'none');
+          check(enabled)
+            ? elem.removeClass('ng-feature-disabled')
+            : elem.addClass('ng-feature-disabled');
         });
 
         $scope.$on('$destroy', unwatch);
