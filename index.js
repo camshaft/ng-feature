@@ -20,18 +20,44 @@ package.directive('feature', [
     return {
       restrict: 'A',
       link: function($scope, elem, attrs) {
-        var name = attrs.feature;
-        var not = name.charAt(0) === '!';
-        var check = not ? isNotEnabled : isEnabled;
-        if (not) name = name.substr(1);
+        elem.addClass('ng-feature-disabled');
+        var features = attrs.feature.split('||');
+        var subs = [];
+        var ors = [];
 
-        var unwatch = feature.watch(name, function(enabled) {
-          check(enabled)
-            ? elem.removeClass('ng-feature-disabled')
-            : elem.addClass('ng-feature-disabled');
+        ors = features.map(function(ands) {
+          ands = ands.split('&&').map(function(cond) {
+            var name = cond.trim();
+            var not = name.charAt(0) === '!';
+            if (not) name = name.substr(1);
+            subs.push(feature.watch(name, check));
+            return not
+              ? function() { return !feature(name); }
+              : function() { return feature(name); };
+          });
+
+          return function() {
+            for (var i = ands.length - 1; i >= 0; i--) {
+              if (!ands[i]()) return false;
+            }
+            return true;
+          };
         });
 
-        $scope.$on('$destroy', unwatch);
+        check();
+
+        function check() {
+          for (var i = ors.length - 1; i >= 0; i--) {
+            if (ors[i]()) return elem.removeClass('ng-feature-disabled');
+          }
+          return elem.addClass('ng-feature-disabled');
+        }
+
+        $scope.$on('$destroy', function() {
+          subs.forEach(function(unwatch) {
+            unwatch();
+          });
+        });
       }
     };
   }
@@ -42,27 +68,3 @@ package.directive('feature', [
  */
 
 package.name = 'ng-feature';
-
-/**
- * Check if enabled is false
- *
- * @param {Boolean} enabled
- * @return {Boolean}
- * @api private
- */
-
-function isNotEnabled(enabled) {
-  return !enabled;
-}
-
-/**
- * Check if enabled is true
- *
- * @param {Boolean} enabled
- * @return {Boolean}
- * @api private
- */
-
-function isEnabled(enabled) {
-  return enabled;
-}
