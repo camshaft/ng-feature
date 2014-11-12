@@ -2,7 +2,7 @@
   "name": "ng-feature",
   "repo": "camshaft/ng-feature",
   "description": "Feature flags with angular",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [],
   "dependencies": {
     "camshaft/feature": "*"
