@@ -105,7 +105,9 @@ package.directive('feature', [
           $compile(elem)($scope);
           feature.watch(expr, $scope, function(value) {
             $scope[name] = value;
-            if (!$scope.$$phase) $scope.$digest();
+            try {
+              $scope.$digest();
+            } catch (e) {};
           });
         }
       }
